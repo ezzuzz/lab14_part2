@@ -33,7 +33,7 @@ Pool решает эту проблему: создаётся фиксирова
 """
 
 import time
-import os
+import os  # <--- ДОБАВЛЕН ИМПОРТ os
 from multiprocessing import Pool
 
 
@@ -89,8 +89,19 @@ def pool_multiply(A, B, num_processes):
     #      for (i, j, val) in results_list:
     #          result[i][j] = val
 
-    # --- Ваш код здесь ---
-
+    # --- Ваш код для TODO 3 ---
+    
+    # 1. Подготавливаем список аргументов
+    args = [(i, j, A, B) for i in range(rows) for j in range(cols)]
+    
+    # 2. Создаём пул и выполняем вычисления
+    with Pool(processes=num_processes) as pool:
+        results_list = pool.starmap(element, args)
+    
+    # 3. Заполняем результирующую матрицу
+    for (i, j, val) in results_list:
+        result[i][j] = val
+    
     # --- Конец вашего кода ---
 
     return result
@@ -120,6 +131,30 @@ if __name__ == '__main__':
     # Проверьте, что результаты совпадают:
     #   assert par_result == seq_result, "Результаты не совпадают!"
 
-    # --- Ваш код здесь ---
-
+    # --- Ваш код для TODO 4 ---
+    
+    print("\n--- Параллельное вычисление с Pool ---")
+    
+    for n in [1, 2, 4]:
+        t = time.time()
+        par_result = pool_multiply(matrix_a, matrix_b, n)
+        elapsed = time.time() - t
+        
+        # Выводим время выполнения
+        print(f"Pool ({n} процессов): {elapsed:.4f} сек")
+        
+        # Проверяем, что результаты совпадают с последовательными
+        if par_result == seq_result:
+            print(f"  ✓ Результаты совпадают с последовательными")
+        else:
+            print(f"  ✗ ОШИБКА: результаты не совпадают!")
+    
+    # Дополнительно: сравниваем с количеством ядер CPU
+    print(f"\n--- Сравнение с количеством ядер ({cpu_count}) ---")
+    t = time.time()
+    par_result = pool_multiply(matrix_a, matrix_b, cpu_count)
+    elapsed = time.time() - t
+    print(f"Pool ({cpu_count} процессов): {elapsed:.4f} сек")
+    print(f"Ускорение относительно последовательного: {time_seq/elapsed:.2f}x")
+    
     # --- Конец вашего кода ---
